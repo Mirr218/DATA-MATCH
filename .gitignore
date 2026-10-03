@@ -5,3 +5,8 @@ data/
 __pycache__/
 .venv/
 outputs/
+.agents/
+.codex/
+.obsidian/
+AGENTS.md
+SETUP.md
