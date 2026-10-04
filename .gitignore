@@ -10,3 +10,5 @@ outputs/
 .obsidian/
 AGENTS.md
 SETUP.md
+.flake8
+pyproject.toml
