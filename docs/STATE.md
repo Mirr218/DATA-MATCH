@@ -2,7 +2,7 @@
 Обновлено: 4 октября 2026, после шагов 1–7 baseline. Новую работу начинать с AGENTS.md и PROTOCOL.md.
 
 ## Где мы
-Worktree: `C:/Users/cocos/.codex/worktrees/5ed2/Data Match Техинческий трек`, ветка `codex/baseline`.
+Worktree: `C:/Users/cocos/.codex/worktrees/5ed2/Data Match Техинческий трек`, ветка `baseline`.
 Основная копия по прежней записи: `C:/Users/cocos/OneDrive/Dokumenti/ChatGPT/Data Match Техинческий трек`, `main`; в этой сессии не изменялась.
 Коммит, перенос между копиями и отправка в сеть не выполнялись. Изменения пока локальные.
 
