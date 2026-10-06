@@ -6,6 +6,15 @@
 
 ## Запуск и воспроизведение
 
+Требуется Python 3.11 или новее; расчёты проверены на Python 3.12.14. Зависимости зафиксированы в [pyproject.toml](pyproject.toml): numpy 2.3.5 и pandas 3.0.1. Установка из корня проекта в PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e .
+```
+
+В командах ниже используйте `.\.venv\Scripts\python.exe` вместо `python`. На Linux/macOS путь к интерпретатору окружения — `.venv/bin/python`. Если окружение уже активировано, достаточно `python -m pip install -e .`. Установка в режиме `-e` связывает пакет с рабочей копией, чтобы команды находили локальные data и outputs.
+
 Рабочий каталог — корень проекта. Данные организаторов располагаются локально в data; схема — [data/README.md](data/README.md), условия — [data/LICENSE.md](data/LICENSE.md). Данные и outputs не входят в Git. Документационная проверка не запускает модели или сборку прогнозов.
 
 - `python -X utf8 -m src.evaluate_baseline` — обе сценарные ошибки, R/S и файлы в outputs.
