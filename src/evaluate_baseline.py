@@ -16,8 +16,10 @@ def evaluate_baseline():
     table = load_training_table()[KEYS + ["tickets_total"]]
     table = table.merge(matches[["match_id", "date"]], on="match_id", validate="many_to_one")
     examples = make_scenario_examples(matches, sales)
+    seats = pd.read_csv(ROOT / "data/zones.csv", usecols=KEYS + ["seats"])
+    examples = examples.merge(seats, on=KEYS, how="left", validate="many_to_one")
     summary, details = evaluate_method(zone_mean_baseline, table, examples,
-                                      feature_columns=("sold",),
+                                      feature_columns=("sold", "seats"),
                                       prediction_rule=historical_prediction_rule)
     windows, scores = aggregate_scores(summary)
     return examples, summary, details, windows, scores
@@ -34,4 +36,4 @@ if __name__ == "__main__":
         json.dumps(scores, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(windows.to_string(index=False, float_format=lambda value: f"{value:.3f}"))
     print("; ".join(f"{name} = {value:.3f}" for name, value in scores.items()))
-    print(f"Примеров: {len(examples)}; округление .5 вверх, без исторического потолка.")
+    print(f"Примеров: {len(examples)}; округление .5 вверх, с историческим потолком seats.")

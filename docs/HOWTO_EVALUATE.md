@@ -1,6 +1,6 @@
 # Подключение метода к общей проверке
 
-Работайте из корня проекта; правила — в `docs/PROTOCOL.md`, их не меняйте.
+Запуск из корня проекта; правила — в [docs/PROTOCOL.md](PROTOCOL.md), изменение правил без согласования запрещено.
 Метод храните в своём согласованном файле/ветке; общая validation.py принадлежит лидеру.
 Интерфейс: `method(history, batch)` возвращает одномерный массив в порядке batch либо Series с тем же индексом.
 history: match_id, zone, date, tickets_total; только матчи до окна, завершённые к cutoff.
@@ -17,9 +17,9 @@ from src.scenarios import make_scenario_examples, historical_prediction_rule
 from src.validation import evaluate_method, aggregate_scores
 matches = pd.read_csv(ROOT / "data/matches.csv", parse_dates=["date", "sales_open"])
 table = load_training_table()[["match_id", "zone", "tickets_total"]].merge(matches[["match_id", "date"]], on="match_id", validate="many_to_one")
-examples = make_scenario_examples(matches, pd.read_csv(ROOT / "data/sales_daily.csv", parse_dates=["date"]))
+examples = make_scenario_examples(matches, pd.read_csv(ROOT / "data/sales_daily.csv", parse_dates=["date"])).merge(pd.read_csv(ROOT / "data/zones.csv", usecols=["match_id", "zone", "seats"]), on=["match_id", "zone"], how="left", validate="many_to_one")
 def toy(history, batch): return batch.zone.map(history.groupby("zone").tickets_total.mean())
-summary, details = evaluate_method(toy, table, examples, feature_columns=("sold",), prediction_rule=historical_prediction_rule)
+summary, details = evaluate_method(toy, table, examples, feature_columns=("sold", "seats"), prediction_rule=historical_prediction_rule)
 windows, scores = aggregate_scores(summary)
 ```
 
@@ -35,6 +35,6 @@ S = 139.155; S[0] = 143.913; S[1] = 129.748. Числа отчёта округ�
 Исходный ориентир `python -X utf8 -m src.baseline`: 155.999 / 103.139 / 157.144; другая схема, не S.
 Нельзя менять примеры, веса, отсечки, окна, формулы и пороги; нельзя перемешивать матчи или делить их зоны.
 Нельзя читать поздние продажи/проверочные цели, учить средние или преобразования на всей таблице, применять исторический cap.
-Всегда передавайте historical_prediction_rule: .5 вверх, минимум sold; для новых признаков описывайте доступность в docstring.
+Всегда передавайте historical_prediction_rule: .5 вверх, минимум sold, максимум seats; для новых признаков описывайте доступность в docstring.
 Фиксируйте random_state; внешние данные запрещены, КХЛ/абонементы требуют согласованных правил и отдельного аудита.
-Все три окна участвуют в выборе; результат и leakage-audit передайте лидеру для EXPERIMENTS, сравнение — с тем же baseline.
+Все три окна участвуют в выборе; результат и leakage-audit передаются лидеру для EXPERIMENTS, сравнение — с тем же baseline.

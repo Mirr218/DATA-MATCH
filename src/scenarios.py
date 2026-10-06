@@ -53,9 +53,10 @@ def make_scenario_examples(matches: pd.DataFrame, sales: pd.DataFrame) -> pd.Dat
 
 
 def historical_prediction_rule(raw, batch: pd.DataFrame) -> np.ndarray:
-    """Единое округление и минимум; исторический верхний потолок не применяется.
+    """Единое округление, минимум sold и максимум seats для всех методов.
 
     sold доступен на момент: cutoff; значение обрезано в общем примере.
+    seats доступен на момент: cutoff по согласованному допущению PROTOCOL.
     """
     predicted = np.asarray(raw, dtype=float)
     sold = batch.sold.to_numpy(dtype=float)
@@ -66,4 +67,10 @@ def historical_prediction_rule(raw, batch: pd.DataFrame) -> np.ndarray:
     if not batch.scenario.isin([0, 1]).all() or ((batch.scenario == 0) & (batch.sold != 0)).any():
         raise ValueError("В сценарии без продаж sold должен быть равен нулю")
 
-    return np.maximum(np.floor(predicted + 0.5), sold)
+    seats = batch.seats.to_numpy(dtype=float)
+    if (seats.shape != sold.shape or not np.isfinite(seats).all()
+            or (seats < 0).any() or (seats % 1 != 0).any()):
+        raise ValueError("Число мест должно быть конечным, целым и неотрицательным")
+    if (sold > seats).any():
+        raise ValueError("Противоречие: уже продано больше seats")
+    return np.minimum(np.maximum(np.floor(predicted + 0.5), sold), seats)

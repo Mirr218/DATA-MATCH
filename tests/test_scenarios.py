@@ -43,10 +43,14 @@ class ScenarioTests(unittest.TestCase):
         after = make_scenario_examples(self.matches, changed)
         pd.testing.assert_frame_equal(before, after)
 
-    def test_rounding_and_floor_apply_without_historical_ceiling(self):
-        batch = pd.DataFrame({"scenario": [0, 0, 1, 1, 1], "sold": [0, 0, 12, 0, 0]})
+    def test_rounding_sold_floor_and_seats_ceiling(self):
+        batch = pd.DataFrame({"scenario": [0, 0, 1, 1, 1], "sold": [0, 0, 12, 0, 0],
+                              "seats": [100, 100, 100, 100, 10000]})
         predicted = historical_prediction_rule([2.5, -2.5, 3.1, 3.49, 10000.5], batch)
-        np.testing.assert_array_equal(predicted, [3, 0, 12, 3, 10001])
+        np.testing.assert_array_equal(predicted, [3, 0, 12, 3, 10000])
+        batch.loc[2, "seats"] = 11
+        with self.assertRaisesRegex(ValueError, "уже продано больше seats"):
+            historical_prediction_rule([2.5, -2.5, 3.1, 3.49, 10000.5], batch)
 
     def test_R_mixes_mse_and_S_mixes_ready_R(self):
         windows = ["M035–M051", "M052–M068", "M069–M085"]
