@@ -1,6 +1,6 @@
 # Leakage-audit: сценарный baseline, шаг 5
 
-Дата: 04.10.2026. Проверен `docs/PROTOCOL.md` с решениями шага 4.
+Дата: 04.10.2026. Проверен [docs/PROTOCOL.md](../PROTOCOL.md) с решениями шага 4.
 Область: `src/scenarios.py`, `src/validation.py`, `src/baseline.py`, `src/evaluate_baseline.py`.
 Запуск: `python -X utf8 -m src.evaluate_baseline`.
 
