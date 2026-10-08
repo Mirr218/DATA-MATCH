@@ -1,0 +1,44 @@
+Metadata-Version: 2.4
+Name: data-match-avangard
+Version: 0.1.0
+Summary: Ticket demand forecasting for DATA MATCH
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: catboost>=1.2.10
+Requires-Dist: ipykernel>=7.4.0
+Requires-Dist: numpy==2.3.5
+Requires-Dist: pandas==3.0.1
+Requires-Dist: scikit-learn>=1.9.1
+
+# DATA MATCH: прогноз спроса на билеты ХК «Авангард»
+
+Задача: итог обычных продаж для 17 тестовых матчей M086–M102 по 8 зонам, 136 целых неотрицательных прогнозов. Выбран baseline — среднее по зоне из доступной истории. A, B и C отклонены; основания и контрольные числа приведены в [STATE](docs/STATE.md).
+
+Порядок чтения: README → [STATE](docs/STATE.md) → [PROTOCOL](docs/PROTOCOL.md) → [HOWTO_EVALUATE](docs/HOWTO_EVALUATE.md) → при необходимости [EXPERIMENTS](docs/EXPERIMENTS.md). Полный [индекс документов](docs/README.md); [индекс аудитов](docs/audits/README.md).
+
+## Запуск и воспроизведение
+
+Требуется Python 3.11 или новее; расчёты проверены на Python 3.12.14. Зависимости зафиксированы в [pyproject.toml](pyproject.toml): numpy 2.3.5 и pandas 3.0.1. Установка из корня проекта в PowerShell:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e .
+```
+
+В командах ниже используйте `.\.venv\Scripts\python.exe` вместо `python`. На Linux/macOS путь к интерпретатору окружения — `.venv/bin/python`. Если окружение уже активировано, достаточно `python -m pip install -e .`. Установка в режиме `-e` связывает пакет с исходным кодом проекта, чтобы команды находили data и outputs в корне проекта.
+
+Рабочий каталог — корень проекта. Данные организаторов располагаются локально в data; схема — [data/README.md](data/README.md), условия — [data/LICENSE.md](data/LICENSE.md). Данные и outputs не входят в Git. Документационная проверка не запускает модели или сборку прогнозов.
+
+- `python -X utf8 -m src.evaluate_baseline` — обе сценарные ошибки, R/S и файлы в outputs.
+- `python -X utf8 -m src.diagnose_baseline` — вклад выборки, истории и нижней границы.
+- `python -X utf8 -m src.make_baseline` — только outputs/predictions_baseline.csv; `python -X utf8 -m unittest discover -s tests -v` — проверки.
+- `python -X utf8 -m src.evaluate_early_sales --compare` — контроль и фиксированные A/B; `--control-only` — только контроль, `--prepare-only` — временные срезы. Эти команды не перезаписывают prediction-файлы.
+Сохранённые результаты A/B — до seats; повторный --compare с нынешним общим правилом даст отдельный пересчёт, после seats не выполнялся.
+- `python -X utf8 -m src.evaluate_pace_ratio` — C и отдельные outputs/pace_ratio_C_*; `python -X utf8 -m src.audit_pace_ratio` — независимое восстановление. Файлы сдачи и прежние отчёты A/B не перезаписывают.
+Команда make_baseline указана как справочная: её повторный запуск перезаписывает резерв и требует отдельного разрешения на запись.
+
+## Состояние реализации
+
+Сохранён резерв outputs/predictions_baseline.csv; корневой predictions.csv отсутствует. Ноутбук и презентация ещё не готовы; инструкция README описывает существующие команды, а комплект сдачи остаётся незавершённым. Целевая дата и ближайшие действия — STATE. Baseline, validation и их тесты уже присутствуют в истории ветки; текущие изменения развивают общее правило seats и добавляют фиксированные A/B/C.
+
+Правила честности: только временные окна, все зоны матча вместе, история до окна и завершённая к cutoff, продажи строго до утра отсечки. Исторические ограничения и допущение о seats — PROTOCOL. Параметры и критерии после просмотра результатов не подбираются. Внешние данные и праздники не используются; доступность исторических абонементов остаётся открытой.

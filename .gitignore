@@ -13,3 +13,4 @@ outputs/*
 AGENTS.md
 SETUP.md
 .flake8
+catboost_info/

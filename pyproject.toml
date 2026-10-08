@@ -9,8 +9,11 @@ description = "Ticket demand forecasting for DATA MATCH"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "catboost>=1.2.10",
+    "ipykernel>=7.4.0",
     "numpy==2.3.5",
     "pandas==3.0.1",
+    "scikit-learn>=1.9.1",
 ]
 
 [tool.setuptools]
