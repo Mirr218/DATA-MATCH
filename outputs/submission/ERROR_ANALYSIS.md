@@ -100,4 +100,3 @@ S = 126.735841108 против 139.154980934; снижение 8.924682208984825
 ## Повторить анализ
 
 Из корня: `.venv/Scripts/python.exe outputs/submission/analyze_errors.py`. Читается готовая audit_validation.csv; финальный notebook/CSV и данные не меняются. Агрегаты: error_groups.csv, zone_scores.csv, analysis_summary.json. Построчные audit_validation.csv не включать в материалы для публичного показа.
-
